@@ -1,0 +1,22 @@
+{
+    "extension": 
+    {
+        "name": "SolutionBrowser",
+        "version": "1.0.0",
+        "description": "Browse solutions in your local",
+        "icon": "YOUR_EXTENSION_ICON.png",
+        "senders": [
+                    {
+                        "location": "studioToolbar", 
+						"actionName": "open"
+                    }
+        ],
+        "actions": [
+                    {
+                        "name": "open",
+                        "title": "Browse Solutions"
+                    }
+        ],
+        "lifetime": "application_lifetime"
+    }
+}

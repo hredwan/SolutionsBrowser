@@ -1,0 +1,62 @@
+<html>
+	<head>
+		<title>Wakanda Available Solutions </title>
+		<script src="libs/jquery.js"></script>
+		
+	</head>
+	
+	<body>
+		<div class="">
+			<h1>Solutions Browser Settings</h1>
+			<div>
+				<table>
+					<tr>
+						<td><h6>Directories to browse:</h6></td>
+					</tr>
+					<tr>
+						<td>
+							<ul id="foldersList">
+								
+							</ul>
+							<a href="#" id="addFolder" >Add new directory</a>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="#" id="saveFolders" >Save</a>
+						</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+		<script>
+			$('#addFolder').click(
+				function()
+					{
+					
+						var theFolder = studio.folderSelectDialog();
+						$('#foldersList').append('<li><input name="folders[]" type="text" value="' + theFolder.path +'"/></li>');
+						
+						
+					}
+				
+			)
+			
+			$('#saveFolders').click(
+				function()
+					{
+					
+						var folders = $('input[name="folders[]"]').map(function(){return $(this).val();}).get();
+						
+						 studio.extension.storage.returnValue = {
+							"folders":JSON.stringify(folders)
+							};
+						//studio.extension.quitDialog();
+						
+						
+					}
+				
+			)
+		</script>
+	</body>
+</html>

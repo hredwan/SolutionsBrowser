@@ -1,0 +1,23 @@
+<html>
+	<head>
+		<title>Wakanda Available Solutions </title>
+		<script src="libs/jquery.js"></script>
+	</head>
+	
+	<body>
+		<div class="list">
+			<h2>Solutions List</h2>
+			<ul>
+				
+			</ul>
+		</div>
+		<script>
+			var solutions = studio.extension.storage.dialogArguments.sols;
+			
+			for(var f in solutions)
+			{
+				$('.list ul').append('<li>'+solutions[f]+'</li>');
+			}
+		</script>
+	</body>
+</html>
