@@ -2,22 +2,105 @@
 	<head>
 		<title>Wakanda Available Solutions </title>
 		<script src="libs/jquery.js"></script>
+		<script src="libs/bootstrap.min.js"></script>
+		
+		<link rel="stylesheet" href="css/bootstrap.min.css">
 	</head>
 	
 	<body>
-		<div class="list">
-			<h2>Solutions List</h2>
-			<ul>
-				
-			</ul>
+		<div class="panel panel-default list" style="margin:20px">
+			<div class="panel-heading"> <h3 class="pull-left">Solutions Available</h3>
+				<a style="background:url(img/settings.png) no-repeat; width:24px; height:24px" class="pull-right" title="Go to settings" href="settings.html"></a>
+				<a style="background:url(img/refresh.png) no-repeat; width:24px; height:24px;margin-right:10px" class="pull-right" href="#" onclick="javascript:display()" title="Refresh the list" ></a>
+				<div class="clearfix"></div>
+			</div>
+			<table class="table">
+				<thead>
+				<tr>
+				  <th>#</th>
+				  <th>Solution Name</th>
+				  <th>Action</th>
+				  
+				</tr>
+			  </thead>
+			</table>
 		</div>
 		<script>
-			var solutions = studio.extension.storage.dialogArguments.sols;
-			
-			for(var f in solutions)
+			function findCommand(f)
 			{
-				$('.list ul').append('<li>'+solutions[f]+'</li>');
+				var isMac = (navigator.platform.indexOf("Mac") !== -1) ? true : false;
+				if(!isMac)
+				{
+					return 'cmd /c cd "'+ f +'" && dir /b /S "*.waSolution"'
+				}
+				else if(isMac)
+				{
+					return 'sudo find '+ f + ' -iname "*.waSolution"';
+				}
+			}
+			function display()
+			{
+				$('.list table tbody').remove();
+				var solutions = [];
+				if(studio.extension.storage.dialogArguments.sols && studio.extension.storage.dialogArguments.sols.length > 0 )
+				{
+					solutions = studio.extension.storage.dialogArguments.sols;
+				
+				}
+				else
+				{
+					var folders = JSON.parse(studio.extension.getPref('folders'));
+					
+					for ( var f in folders )
+					{
+						var results = studio.SystemWorker.exec(findCommand(folders[f]) );
+						solutions = solutions.concat(results.output.toString().split("\n"));
+					}
+				}
+				
+				for(var f  = 0; f < solutions.length; f++)
+					{
+						var fd = studio.File(solutions[f]);
+						$('.list table').append('<tr><td>' + (f+1) +'</td><td><a href="#" title="'+fd.path+'">'+fd.nameNoExt+'</a></td>  <td class="btn-group"><a href="#" class="openSolution btn btn-info" title="Open in Wakanda Studio" data-toggle="tooltip" rel="'+fd.path+'">Open</a>  <a data-toggle="tooltip" href="#" title="Start this solution in Wakanda Server" class="startSolution btn btn-success" rel="'+fd.path+'">Start</a></td></tr>');
+					}
+				
+				
+			}
+			display();
+			function openSolutionInStudio(element)
+			{
+			
+				var path = $(element).attr('rel');
+				var isOpen = studio.openSolution($.trim(path));
+				
+				if(!isOpen)
+				{
+					studio.alert("Solution Cannot be open");
+				}
+				
+				else
+				{
+					studio.extension.storage.setItem( "selectedSolution",  path)
+					studio.extension.quitDialog();
+				}
 			}
 		</script>
+		
+		<script>
+				
+			$('.openSolution').click(function(){
+				openSolutionInStudio(this)
+				});
+			
+			
+			$('.startSolution').click(
+			function()
+			{
+				openSolutionInStudio(this);
+				studio.sendCommand("SolutionsBrowser.startSolution");
+			});
+			
+			
+		</script>	
 	</body>
 </html>

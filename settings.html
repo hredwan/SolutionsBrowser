@@ -2,40 +2,65 @@
 	<head>
 		<title>Wakanda Available Solutions </title>
 		<script src="libs/jquery.js"></script>
+		<script src="libs/bootstrap.min.js"></script>
+		<link rel="stylesheet" href="css/bootstrap.min.css">
 		
 	</head>
-	
+
 	<body>
-		<div class="">
-			<h1>Solutions Browser Settings</h1>
-			<div>
-				<table>
-					<tr>
-						<td><h6>Directories to browse:</h6></td>
-					</tr>
-					<tr>
-						<td>
-							<ul id="foldersList">
-								
-							</ul>
-							<a href="#" id="addFolder" >Add new directory</a>
-						</td>
-					</tr>
-					<tr>
-						<td>
-							<a href="#" id="saveFolders" >Save</a>
-						</td>
-					</tr>
+		<div style="margin:20px">
+			<h1 >Solutions Browser Settings</h1>
+			<a style="background:url(img/list.png) no-repeat; width:24px; height:24px" title="Display Solutions" class="pull-right" href="solutionsList.html"></a>
+				<div class="clearfix"></div>
+			<div class="well">
+				<h4>Directories to browse:</h4>
+				<p>
+					This is a list of directories and folders where the extension will look for .waSolution files.
+				</p>
+				<table class="table .table-striped" id="foldersList">
+					
+					
 				</table>
+			</div>
+			
+			<div class="btn-group">
+				<a href="#" title="Add new directory" id="addFolder" class="btn btn-info">Add</a>
+				<a href="#" id="saveFolders" title="Save Edits" class="btn btn-success">Save</a>
 			</div>
 		</div>
 		<script>
+			var trk = 0;
+			if(	studio.extension.isPrefFileExisting( ) )
+			{
+				var ftob = JSON.parse(studio.extension.getPref("folders"));
+				
+				for(var f  = 0; f < ftob.length; f++)
+				{
+					
+					$('#foldersList').append('<tr><td>' + (f+1) +'</td><td><input name="folders[]" type="hidden" value="' + ftob[f] +'"/><a href="#" title="'+ftob[f]+'">'+ftob[f]+'</a></td>  <td class=""><a href="#" class="deleteFolder openSolution btn btn-danger" title="Delete" data-toggle="tooltip" rel="'+f+'">Delete</a>  </td></tr>');
+					trk++;
+				
+				}
+			}	
+			
 			$('#addFolder').click(
 				function()
 					{
 					
 						var theFolder = studio.folderSelectDialog();
-						$('#foldersList').append('<li><input name="folders[]" type="text" value="' + theFolder.path +'"/></li>');
+						$('#foldersList').append('<tr><td>' + (++trk) +'</td><td><a href="#" title="'+theFolder.path+'">'+theFolder.path+'</a><input name="folders[]" type="hidden" value="' + theFolder.path +'"/></td><td><a href="#" class="openSolution btn btn-danger deleteFolder" title="Delete" data-toggle="tooltip" rel="'+trk+'">Delete</a>  </td></tr>');
+						
+						
+					}
+				
+			)
+			
+			$('.deleteFolder').click(
+				function()
+					{
+					
+						
+						$(this).parent().parent().remove(); //.append('<tr><td>' + (++trk) +'</td><td><a href="#" title="'+theFolder.path+'">'+theFolder.path+'</a><input name="folders[]" type="hidden" value="' + theFolder.path +'"/></td><td><a href="#" class="openSolution btn btn-danger" class="deleteFolder" title="Delete" data-toggle="tooltip" rel="'+trk+'">Delete</a>  </td></tr>');
 						
 						
 					}
@@ -51,7 +76,19 @@
 						 studio.extension.storage.returnValue = {
 							"folders":JSON.stringify(folders)
 							};
-						//studio.extension.quitDialog();
+						
+							
+							var isSaved = 	studio.extension.setPref("folders", JSON.stringify(folders));
+								
+							if(isSaved)
+							{
+								studio.alert("Settings Saved!");
+							}		
+							else
+							{
+								studio.alert("Unknown Error: Cannot save your settings");
+							}		
+						    
 						
 						
 					}

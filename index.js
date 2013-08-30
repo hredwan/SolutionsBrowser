@@ -21,11 +21,26 @@
 * THE SOFTWARE.
 */
 
+/**
+Author: Redwan Hilali
+Email: redwan.hilali@4d.com
+**/
+
 var
 	actions;
 actions = {};
 
-
+function findCommand(f)
+{
+	if(os.isWindows)
+	{
+		return 'cmd /c cd "'+ f +'" && dir /b /S "*.waSolution"'
+	}
+	else if(os.isMac)
+	{
+		return 'sudo find '+ f + ' -iname "*.waSolution"';
+	}
+}
 
 actions.open = function open() {
     "use strict";
@@ -36,14 +51,14 @@ actions.open = function open() {
 		var solutions = [];
 		for ( var f in folders )
 		{
-			var results = SystemWorker.exec('cmd /c cd "'+ folders[f] +'" && dir /b /S "*.waSolution"');
+			var results = SystemWorker.exec(findCommand(folders[f]));
 			solutions = solutions.concat(results.output.toString().split("\n"));
 		}
-	   studio.alert(solutions);
+	  
 	    studio.extension.showModalDialog("solutionsList.html", {sols:solutions}, {
 	        title: "Wakanda Available Solutions",
-	        dialogwidth: 470,
-	        dialogheight: 380,
+	        dialogwidth: 870,
+	        dialogheight: 580,
 	        resizable: false
 	    }, '');
 	 
@@ -62,10 +77,10 @@ actions.settings = function settings() {
 	
 	 studio.extension.showModalDialog("settings.html", {}, {
 	        title: "Wakanda Settings",
-	        dialogwidth: 470,
-	        dialogheight: 380,
+	        dialogwidth: 870,
+	        dialogheight: 580,
 	        resizable: false
-	    }, 'saveSettings');
+	    }, '');
 	
 	return true;
 };
@@ -74,13 +89,20 @@ actions.saveSettings = function saveSettings()
 {
 	"use strict";
 	
-	var folders = studio.extension.storage.returnValue.folders;
-	studio.extension.setPref("folders", folders);
-	studio.alert("ok");
+//	var folders = studio.extension.storage.returnValue.folders;
+	studio.alert(folders);
+//	studio.extension.setPref("folders", folders);
+	
 	
 }
 
-
+actions.startSolution = function startSolution( inMessage )
+{
+	"use strict";
+	
+	studio.sendCommand("startWakandaServer") ; //admin.openSolution(studio.extension.storage.getItem( "selectedSolution")));
+	
+}
 
 
 exports.handleMessage = function handleMessage(message) {

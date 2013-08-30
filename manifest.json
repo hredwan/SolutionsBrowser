@@ -4,7 +4,7 @@
         "name": "SolutionBrowser",
         "version": "1.0.0",
         "description": "Browse solutions in your local",
-        "icon": "YOUR_EXTENSION_ICON.png",
+        "icon": "icon.png",
         "senders": [
                     {
                         "location": "studioToolbar", 
